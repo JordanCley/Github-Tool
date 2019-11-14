@@ -4,13 +4,14 @@ const util = require("util");
 const generateHTML = require("./generateHTML.js");
 const axios = require("axios");
 const pdf = require('html-pdf');
-// var html = fs.readFileSync('./test/businesscard.html', 'utf8');
-var options = { format: 'Legal', orientation: 'portrait'};
+
+let options = { format: 'Legal', orientation: 'portrait'};
 let starNums = "";
+let location = "";
 
 const readFileAsync = util.promisify(fs.readFile);
-const writeFileAsync = util.promisify(fs.writeFile);
 
+// INQUIRER PROMPT FUNCTION
 function promptUser() {
   return inquirer
     .prompt([
@@ -32,31 +33,38 @@ function promptUser() {
     });
 }
 
+// ASYNC INIT FUNCTION
 async function init() {
   try {
+    // CALLING INQUIRER PROMPTUSER AND WAITING TO DECLARE CONST ANSWERS
     const answers = await promptUser();
+    // MAKING AXIOS GET REQUEST AND WAITING TO DECLARE  CONST RESPONSE
     const response = await axios.get(
       `https://api.github.com/users/${answers.github}`
     );
+    // REASSIHNING LOCATION AFTER STRIPPING < AND SPACES, REPLACING WITH +
+    location += (response.data.location).replace(", ", "+").replace(" ", "+");
+    
+    // MAKING AXIOS GET REQUEST AND WAITING TO DECLARE  CONST RESPONSEREPOS
     const responseRepos = await axios.get(
       `https://api.github.com/users/${answers.github}/repos`
     );
+    // LOOPING THROUGH REPOS AND CHECKING IF THEY HAVE STARS
     for (let i = 0; i < responseRepos.data.length; i++) {
       if (responseRepos.data[i].stargazers_count !== 0) {
+        // IF THEY DO, ADD THEM TO STARNUMS COUNT VARIABLE
         starNums += responseRepos.data[i].stargazers_count;
       }
     }
+    // READING GENERATEHTML.JS 
     await readFileAsync("generateHTML.js", "utf8");
-    // console.log(generateHTML.generateHTML(response));
-    const html = await generateHTML.generateHTML(response, answers, starNums);
-    // await writeFileAsync("index.html", html);
-    // let indexFile = await readFileAsync("index.html", "utf8");
+    // ASSIGNING HTML CONST WITH GEN HTML MODULE AND PASSING THOUGH RESPONSES AND VARIABLES
+    const html = await generateHTML.generateHTML(response, answers, starNums, location);
+    // CREATING PDF FILE FROM GEN HTML FILE
     await pdf.create(html, options).toFile(`${answers.github}.pdf`, function(err, res) {
       if (err) return console.log(err);
-      console.log(res); // { filename: '/app/businesscard.pdf' }
+      console.log(res); 
     });
-    
-    // console.log(starNums)
   } catch (error) {
     console.error(error);
   }
