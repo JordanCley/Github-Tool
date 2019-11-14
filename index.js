@@ -3,6 +3,9 @@ const fs = require("fs");
 const util = require("util");
 const generateHTML = require("./generateHTML.js");
 const axios = require("axios");
+const pdf = require('html-pdf');
+// var html = fs.readFileSync('./test/businesscard.html', 'utf8');
+var options = { format: 'Legal', orientation: 'portrait'};
 let starNums = "";
 
 const readFileAsync = util.promisify(fs.readFile);
@@ -46,7 +49,13 @@ async function init() {
     await readFileAsync("generateHTML.js", "utf8");
     // console.log(generateHTML.generateHTML(response));
     const html = await generateHTML.generateHTML(response, answers, starNums);
-    await writeFileAsync("index.html", html);
+    // await writeFileAsync("index.html", html);
+    // let indexFile = await readFileAsync("index.html", "utf8");
+    await pdf.create(html, options).toFile(`${answers.github}.pdf`, function(err, res) {
+      if (err) return console.log(err);
+      console.log(res); // { filename: '/app/businesscard.pdf' }
+    });
+    
     // console.log(starNums)
   } catch (error) {
     console.error(error);
