@@ -230,7 +230,7 @@ a, a:hover {
       </div>
     </div>
           
-    <div class="card">
+    <div id="pageFooter-last" class="card">
       <div class="container"></div>
     </div>
   </div>
