@@ -1,3 +1,5 @@
+
+// COLORS OBJECT
 const colors = {
   green: {
     cardBackground: "green",
@@ -29,7 +31,9 @@ const colors = {
   }
 };
 
-function generateHTML(response, answers, starNums) {
+
+// PASSING THROUGH RESPONSES AND VARIABLES FROM INDEX.JS
+function generateHTML(response, answers, starNums, location) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -190,7 +194,7 @@ a, a:hover {
         <div class="links-nav">
           <a 
             class="nav-link" 
-            href="https://www.google.com/maps/place/${response.data.location}">
+            href="https://www.google.com/maps/place/${location}">
               <i class="fas fa-location-arrow"></i> ${response.data.location}
           </a>
           <a class="nav-link" href="${response.data.html_url}">
