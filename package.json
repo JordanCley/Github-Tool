@@ -17,6 +17,6 @@
     "inquirer": "^7.0.0"
   },
   "devDependencies": {
-    "html-pdf": "^2.2.0"
+    "html-pdf": "^3.0.1"
   }
 }
